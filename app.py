@@ -27,7 +27,7 @@ def get_tasks():
 
 @app.route('/add_task')
 def add_task():
-    return render_template('addtask.html')
+    return render_template('addtask.html', categories=mongo.db.categories.find())
 
 #Set up IP adress and port number so it knows how and where to run application
 if __name__ == '__main__':
