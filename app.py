@@ -4,6 +4,7 @@ from flask import Flask, render_template, redirect, request, url_for
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId 
 
+
 #Keeps eny.py private by being listed on gitignore file
 from os import path
 if path.exists("env.py"):
@@ -28,6 +29,26 @@ def get_tasks():
 @app.route('/add_task')
 def add_task():
     return render_template('addtask.html', categories=mongo.db.categories.find())
+
+#Submitting a form using POST (the 'add task' button) so we have to specify HTTP method as default is GET
+@app.route('/insert_task', methods=["POST"])
+def insert_task():
+    #Gets tasks collection from mongo, and inserts one request (as requests are the type of object sent across web) converted to dictionary
+    tasks = mongo.db.tasks
+    tasks.insert_one(request.form.to_dict())
+    #Once done and sent, redirect to 'get_tasks' page above to view full selection
+    return redirect(url_for('get_tasks'))
+
+#Function reacts when edit btn clicked: need to retrieve task from db with its id
+@app.route('/edit_task/<task_id>')
+def edit_task(task_id):
+    #Fetch the task that matches this task id, converted into a form that's readable by mongo
+    the_task =  mongo.db.tasks.find_one({"_id": ObjectId(task_id)})
+    #The form will be filled in instead of being empty (as this is editing!)
+    all_categories =  mongo.db.categories.find()
+    return render_template('edittask.html', task=the_task,
+                           categories=all_categories)
+
 
 #Set up IP adress and port number so it knows how and where to run application
 if __name__ == '__main__':
