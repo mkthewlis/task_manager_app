@@ -25,6 +25,10 @@ mongo = PyMongo(app)
 def get_tasks():
     return render_template("tasks.html", tasks=mongo.db.tasks.find())
 
+@app.route('/add_task')
+def add_task():
+    return render_template('addtask.html')
+
 #Set up IP adress and port number so it knows how and where to run application
 if __name__ == '__main__':
     #Set the host & port later used for Heroku; set debug
